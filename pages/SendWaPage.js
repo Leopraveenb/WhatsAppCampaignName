@@ -7,12 +7,12 @@ export class SendWaPage {
     this.toNumberInput = page.locator('#tonumber');
     this.submitButton = page.getByRole('button', { name: 'Submit Now' });
     this.confirmButton = page.getByRole('button', { name: 'Yes,Submit it!' });
-    this.okButton = page.getByRole('button', { name: 'OK!' });
+    this.okButton = page.getByRole('button', { name: /^OK$/ });
   }
 
   async openSendWaMenu() {
-    await this.sendWaLink.click();
-    await this.sendWappLink.click();
+    await this.page.goto('http://46.4.81.215/wap/sendwa.jsp', { waitUntil: 'domcontentloaded' });
+    await this.page.waitForLoadState('networkidle');
   }
 
   async fillMessage(message) {
@@ -22,10 +22,10 @@ export class SendWaPage {
     await textMessageLocator.fill(message);
   }
 
-  async waitAndClick(locator) {
-    await locator.waitFor({ state: 'visible', timeout: 15000 });
+  async waitAndClick(locator, timeout = 15000) {
+    await locator.waitFor({ state: 'visible', timeout });
     await locator.scrollIntoViewIfNeeded();
-    await locator.click({ timeout: 15000 });
+    await locator.click({ timeout });
   }
 
   async sendCampaign(campaignName, toNumber, message) {
@@ -44,6 +44,15 @@ export class SendWaPage {
 
     await this.waitAndClick(this.submitButton);
     await this.waitAndClick(this.confirmButton);
-    await this.waitAndClick(this.okButton);
+
+    const limitMessage = this.page.getByText(/You Can Do Max 9 campaign only in single Day/i);
+    if (await limitMessage.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await this.waitAndClick(this.okButton, 5000);
+      throw new Error('Campaign limit reached: the app allows a maximum of 9 campaigns in a single day.');
+    }
+
+    if (await this.okButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await this.waitAndClick(this.okButton, 5000);
+    }
   }
 }

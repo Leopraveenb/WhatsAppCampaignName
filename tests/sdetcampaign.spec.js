@@ -3,7 +3,7 @@ import { test, expect } from '../fixtures/pageFixtures';
 import { FileUtils } from '../utils/fileUtils';
 import { EnvUtils } from '../utils/envUtils';
 
-test('has title', async ({ appPages, page }) => {
+test('SDETAI WhatsApp campaign run', async ({ appPages, page }) => {
   const { loginPage, sendWaPage } = appPages;
   const messageText = FileUtils.readText('testData/txt', 'sdetai_test_data.txt');
   const campaignRows = /** @type {{ companyName: string, phoneNumber: string }[]} */ (
@@ -18,5 +18,4 @@ test('has title', async ({ appPages, page }) => {
   await loginPage.login(username, password);
   await sendWaPage.openSendWaMenu();
   await sendWaPage.sendCampaign('SDETAI Technologies', first10Numbers, messageText);
-  await page.pause();
 });
