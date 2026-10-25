@@ -35,13 +35,12 @@ export class SendWaPage {
     await this.fillMessage(message);
 
     if (phoneNumbers.length > 0) {
-      await this.toNumberInput.type(phoneNumbers[0]);
+      await this.toNumberInput.type(phoneNumbers[0], { timeout: 60000 });
       for (const phone of phoneNumbers.slice(1)) {
-        await this.toNumberInput.press('Enter');
-        await this.toNumberInput.type(phone);
+        await this.toNumberInput.press('Enter', { timeout: 60000 });
+        await this.toNumberInput.type(phone, { timeout: 60000 });
       }
     }
-
     await this.waitAndClick(this.submitButton);
     await this.waitAndClick(this.confirmButton);
 
@@ -51,8 +50,8 @@ export class SendWaPage {
       throw new Error('Campaign limit reached: the app allows a maximum of 9 campaigns in a single day.');
     }
 
-    if (await this.okButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await this.waitAndClick(this.okButton, 5000);
-    }
+  //   if (await this.okButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+  //     await this.waitAndClick(this.okButton, 5000);
+  //   }
   }
 }
